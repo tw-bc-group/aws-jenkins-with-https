@@ -30,19 +30,7 @@ resource "aws_instance" "ci" {
   key_name        = "${module.key_pair.key_name}"
   vpc_security_group_ids = ["${concat(list(module.ci_session_manager.security_group_id), module.security_group.id)}"]
   iam_instance_profile = "${module.ci_session_manager.iam_instance_profile_name}"
-  subnet_id = "${element(module.vpc.public_subnet_ids, 0)}"  // !!!!
-
-  // use user_data to install docker deamon and run as normal user
-  user_data = <<-EOF
-                #!/bin/bash
-                sudo snap install docker
-                sudo groupadd docker
-                sudo usermod -aG docker $USER
-                sudo snap restart docker
-
-                echo "export PATH=/snap/bin/:$PATH" >>  ~/.bashrc
-                source ~/.bashrc
-                EOF
+  subnet_id = "${element(module.vpc.public_subnet_ids, 0)}"
 
   connection {
     type = "ssh"
@@ -53,6 +41,19 @@ resource "aws_instance" "ci" {
   provisioner "file" {
     source = "./https-certificate"
     destination = "/var/tmp/https-certificate"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "/bin/bash -c 'sudo apt-get update'",
+      "/bin/bash -c 'sudo apt -y install docker.io'",
+
+      "/bin/bash -c 'sudo service docker start'",
+      "/bin/bash -c 'sudo groupadd docker'",
+      "/bin/bash -c 'sudo usermod -a -G docker ubuntu'",
+      "/bin/bash -c 'sudo systemctl restart docker'",
+      "/bin/bash -c 'sudo chmod a+rw /var/run/docker.sock'",
+    ]
   }
 }
 
