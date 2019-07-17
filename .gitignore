@@ -19,3 +19,4 @@
 
 list/
 .circleci/
+.gradle/
