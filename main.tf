@@ -9,6 +9,7 @@ module "vpc" {
 module "security_group" {
   source = "./modules/security-group"
   group_name = "ci_security_group"
+  https_port = "${var.https_port}"
   vpc_id = "${module.vpc.vpc_id}"
 }
 

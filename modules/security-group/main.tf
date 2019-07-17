@@ -39,6 +39,15 @@ resource "aws_security_group" "security_group" {
     protocol  = "tcp"
   }
 
+  ingress {
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ]
+    from_port = "${var.https_port}"
+    to_port   = "${var.https_port}"
+    protocol  = "tcp"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
