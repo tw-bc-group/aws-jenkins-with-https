@@ -1,0 +1,11 @@
+region = ""
+ami = ""
+instance_type = ""
+
+#EC2 SSH Key Name for k8s cluster
+aws_k8s_ssh_key_name = ""
+domain = ""
+cf_key = ""
+cf_email = ""
+https_port = ""
+
