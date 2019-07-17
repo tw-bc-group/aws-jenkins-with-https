@@ -20,5 +20,5 @@ variable "generate_nginx_config_file" {
 
 variable "start_nginx_server" {
   type = "string"
-  default = "docker run -p $HTTPS_PORT:$HTTPS_PORT --name nginx -v /var/tmp/https-certificate/:/etc/nginx/conf.d:rw -v /home/ubuntu/.acme.sh:~/.acme.sh:rw -d nginx",
+  default = "docker run -p $HTTPS_PORT:$HTTPS_PORT --name nginx -v /var/tmp/https-certificate/:/etc/nginx/conf.d:rw -v /home/ubuntu/.acme.sh:/etc/nginx/.acme.sh:rw -d nginx",
 }

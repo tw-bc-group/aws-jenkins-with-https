@@ -31,6 +31,18 @@ resource "aws_instance" "ci" {
   iam_instance_profile = "${module.ci_session_manager.iam_instance_profile_name}"
   subnet_id = "${element(module.vpc.public_subnet_ids, 0)}"  // !!!!
 
+  // use user_data to install docker deamon and run as normal user
+  user_data = <<-EOF
+                #!/bin/bash
+                sudo snap install docker
+                sudo groupadd docker
+                sudo usermod -aG docker $USER
+                sudo snap restart docker
+
+                echo "export PATH=/snap/bin/:$PATH" >>  ~/.bashrc
+                source ~/.bashrc
+                EOF
+
   connection {
     type = "ssh"
     user = "ubuntu"
