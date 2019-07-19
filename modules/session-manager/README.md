@@ -1,12 +1,6 @@
-# terraform-aws-session-manager
+## session-manager module 用法
 
-[![CircleCI](https://circleci.com/gh/tmknom/terraform-aws-session-manager.svg?style=svg)](https://circleci.com/gh/tmknom/terraform-aws-session-manager)
-[![GitHub tag](https://img.shields.io/github/tag/tmknom/terraform-aws-session-manager.svg)](https://registry.terraform.io/modules/tmknom/session-manager/aws)
-[![License](https://img.shields.io/github/license/tmknom/terraform-aws-session-manager.svg)](https://opensource.org/licenses/Apache-2.0)
-
-Terraform module which creates Session Manager resources on AWS.
-
-## Description
+### Description
 
 Provision [SSM Documents](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-configure-preferences-cli.html),
 [EC2 Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) and
@@ -17,13 +11,21 @@ This module provides recommended settings:
 - No open inbound ports
 - Loggable session activity
 
-## Usage
-
-### Minimal
+### Module 用法
+#### Minimal without ec2 instance
 
 ```hcl
 module "session_manager" {
-  source        = "git::https://github.com/tmknom/terraform-aws-session-manager.git?ref=tags/1.2.0"
+  source        = "./modules/ec2-session-manager/"
+}
+// From this session_manager module, you can get iam_instance_profile_id and other variables, you can see the variables list in output.tf file.
+```
+
+#### Minimal with ec2 instance
+
+```hcl
+module "session_manager" {
+  source        = "./modules/ec2-session-manager/"
   name          = "example"
   instance_type = "t2.micro"
   subnet_id     = "${var.subnet_id}"
@@ -31,11 +33,11 @@ module "session_manager" {
 }
 ```
 
-### Complete
+#### Complete
 
 ```hcl
 module "session_manager" {
-  source        = "git::https://github.com/tmknom/terraform-aws-session-manager.git?ref=tags/1.2.0"
+  source        = "./modules/ec2-session-manager/"
   name          = "example"
   instance_type = "t2.micro"
   subnet_id     = "${var.subnet_id}"
@@ -59,12 +61,7 @@ module "session_manager" {
 }
 ```
 
-## Examples
-
-- [Minimal](https://github.com/tmknom/terraform-aws-session-manager/tree/master/examples/minimal)
-- [Complete](https://github.com/tmknom/terraform-aws-session-manager/tree/master/examples/complete)
-
-## Inputs
+### Inputs
 
 | Name                          | Description                                                           |  Type  |           Default            | Required |
 | ----------------------------- | --------------------------------------------------------------------- | :----: | :--------------------------: | :------: |
@@ -86,109 +83,49 @@ module "session_manager" {
 | user_data                     | The user data to provide when launching the instance.                 | string |           `` | no            |
 | vpc_security_group_ids        | A list of security group IDs to associate with.                       |  list  |             `[]`             |    no    |
 
-## Outputs
 
-| Name                                  | Description                                                  |
-| ------------------------------------- | ------------------------------------------------------------ |
-| iam_instance_profile_arn              | The ARN assigned by AWS to the instance profile.             |
-| iam_instance_profile_create_date      | The creation timestamp of the instance profile.              |
-| iam_instance_profile_id               | The instance profile's ID.                                   |
-| iam_instance_profile_name             | The instance profile's name.                                 |
-| iam_instance_profile_path             | The path of the instance profile in IAM.                     |
-| iam_instance_profile_role             | The role assigned to the instance profile.                   |
-| iam_instance_profile_unique_id        | The unique ID assigned by AWS.                               |
-| iam_policy_arn                        | The ARN assigned by AWS to this IAM Policy.                  |
-| iam_policy_description                | The description of the IAM Policy.                           |
-| iam_policy_document                   | The policy document of the IAM Policy.                       |
-| iam_policy_id                         | The IAM Policy's ID.                                         |
-| iam_policy_name                       | The name of the IAM Policy.                                  |
-| iam_policy_path                       | The path of the IAM Policy.                                  |
-| iam_role_arn                          | The Amazon Resource Name (ARN) specifying the IAM Role.      |
-| iam_role_create_date                  | The creation date of the IAM Role.                           |
-| iam_role_description                  | The description of the IAM Role.                             |
-| iam_role_name                         | The name of the IAM Role.                                    |
-| iam_role_unique_id                    | The stable and unique string identifying the IAM Role.       |
-| instance_arn                          | The ARN of the instance.                                     |
-| instance_availability_zone            | The availability zone of the instance.                       |
-| instance_id                           | The instance ID.                                             |
-| instance_key_name                     | The key name of the instance.                                |
-| instance_placement_group              | The placement group of the instance.                         |
-| instance_primary_network_interface_id | The ID of the instance's primary network interface.          |
-| instance_private_dns                  | The private DNS name assigned to the instance.               |
-| instance_private_ip                   | The private IP address assigned to the instance.             |
-| instance_security_groups              | The associated security groups.                              |
-| instance_subnet_id                    | The VPC subnet ID.                                           |
-| security_group_arn                    | The ARN of the security group.                               |
-| security_group_description            | The description of the security group.                       |
-| security_group_egress                 | The egress rules of the security group.                      |
-| security_group_id                     | The ID of the security group.                                |
-| security_group_ingress                | The ingress rules of the security group.                     |
-| security_group_name                   | The name of the security group.                              |
-| security_group_owner_id               | The owner ID of the security group.                          |
-| security_group_vpc_id                 | The VPC ID of the security group.                            |
-| ssm_document_default_version          | The default version of the document.                         |
-| ssm_document_description              | The description of the document.                             |
-| ssm_document_hash                     | The sha1 or sha256 of the document content.                  |
-| ssm_document_hash_type                | The hashing algorithm used when hashing the content.         |
-| ssm_document_latest_version           | The latest version of the document.                          |
-| ssm_document_owner                    | The AWS user account of the person who created the document. |
-| ssm_document_parameter                | The parameters that are available to this document.          |
-| ssm_document_platform_types           | A list of OS platforms compatible with this SSM document.    |
-| ssm_document_schema_version           | The schema version of the document.                          |
-| ssm_document_status                   | The current status of the document.                          |
+### session manager 用法：
+1. 通过网页端 AWS 控制台：
+* 登陆到 [AWS System Manager](https://console.aws.amazon.com/systems-manager)
+* 在左侧目录面板中选择 **Session Manager**，点击进入
+* 点击 **start session**，可以在 instance list 中选择希望操作的 instance
+* 之后就会挑转到基于网页的 shell 界面，可以输入命令对 ec2 的 instance 进行操作（默认的 user 是 ***ssm_user***）
 
-## Development
-
-### Requirements
-
-- [Docker](https://www.docker.com/)
-
-### Configure environment variables
-
-```shell
-export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-export AWS_DEFAULT_REGION=ap-northeast-1
+2. 通过 AWS CLI 连接：
+* [安装 AWS CLI](https://docs.amazonaws.cn/cli/latest/userguide/cli-chap-install.html)【推荐在虚拟环境中安装】
+* [为 AWS CLI 安装 Session Manager Plugin](https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+* 配置 AWS CLI 的 Credential：`aws configure`
+```bash
+# Log as follow:
+$ aws configure
+AWS Access Key ID [****************JMU7]: A*************Q
+AWS Secret Access Key [****************/JEe]: e*************1
+Default region name [cn-north-1]: us-west-2
+Default output format [None]:
 ```
+* 连接 EC2 Instance：`aws ssm start-session --target instance-id`(instance-id 为 EC2 实例 ID，可在 AWS EC2 的控制面板中获得)
 
-### Installation
+### 要能够正常使用 session manager 的前置条件：
+* EC2 实例要 attach 一个具有 `AmazonEC2RoleforSSM` 权限的 IAM Role
+* EC2 实例上要安装好 SSM Agent。
+> 默认情况下，SSM 代理 预先安装在以下 Amazon 系统映像 (AMI) 上：  
+  2006 年 11 月或以后发布的 Windows Server 2003-2012 R2 AMI 
+  Windows Server 2016 和 2019  
+  Amazon Linux  
+  Amazon Linux 2  
+  Ubuntu Server 16.04  
+  Ubuntu Server 18.04
+  ----- 该数据来自 AWS 官网 - [使用 SSM 代理](https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/ssm-agent.html)
+  
+  如果 instance 启动起来后，发现仍然无法通过 Session Manager 访问，可以参考如下链接手动安装 SSM Agent：
+  [在 Amazon EC2 Linux 实例上手动安装 SSM 代理](https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-manual-agent-install.html)
 
-```shell
-git clone git@github.com:tmknom/terraform-aws-session-manager.git
-cd terraform-aws-session-manager
-make install
-```
+* 进入到 System Manager 的用户，应该具有 SSM 的权限
 
-### Makefile targets
-
-```text
-check-format                   Check format code
-cibuild                        Execute CI build
-clean                          Clean .terraform
-docs                           Generate docs
-format                         Format code
-help                           Show help
-install                        Install requirements
-lint                           Lint code
-release                        Release GitHub and Terraform Module Registry
-start-session                  Start session to example
-terraform-apply-complete       Run terraform apply examples/complete
-terraform-apply-minimal        Run terraform apply examples/minimal
-terraform-destroy-complete     Run terraform destroy examples/complete
-terraform-destroy-minimal      Run terraform destroy examples/minimal
-terraform-plan-complete        Run terraform plan examples/complete
-terraform-plan-minimal         Run terraform plan examples/minimal
-upgrade                        Upgrade makefile
-```
-
-### Releasing new versions
-
-Bump VERSION file, and run `make release`.
-
-### Terraform Module Registry
-
-- <https://registry.terraform.io/modules/tmknom/session-manager/aws>
-
-## License
-
-Apache 2 Licensed. See LICENSE for full details.
+### 参考文档
+* [什么是 AWS Systems Manager？](https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/what-is-systems-manager.html)
+* [排除 Session Manager的故障](https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/session-manager-troubleshooting.html#session-manager-troubleshooting-instances)
+* [新功能 – AWS Systems Manager Session Manager 支持通过 Shell 访问 EC2 实例 -- AWS 官方博客](https://aws.amazon.com/cn/blogs/china/new-session-manager/#)
+* [Securing Amazon EC2 Instances](https://aws.amazon.com/answers/security/aws-securing-ec2-instances/)
+* [Controlling EC2 OS Access](https://aws.amazon.com/cn/answers/security/aws-controlling-os-access-to-ec2/?nc1=h_ls)
+* [Additional Sample IAM Policies for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-restrict-access-examples.html)
